@@ -34,7 +34,7 @@ def de_preprocess(de_sentence):
     tokens=de_tokenizer(de_sentence)
     tokens=[BOS_SYM]+tokens+[EOS_SYM]
     ids=de_vocab(tokens)
-    return tokens,ids 
+    return tokens,ids
 
 def en_preprocess(en_sentence):
     tokens=en_tokenizer(en_sentence)
