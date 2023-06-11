@@ -41,7 +41,8 @@ class MultiHeadAttention(nn.Module):
         v=self.w_v(x_k_v) # v: (batch_size,seq_len,v_size*head)
         v=v.view(v.size()[0],v.size()[1],self.head,self.v_size).transpose(1,2) # v: (batch_size,head,seq_len,v_size)
         z=torch.matmul(attn,v) # z: (batch_size,head,seq_len,v_size)
-        return z
+        z=z.transpose(1,2) # z: (batch_size,seq_len,head,v_size)
+        return z.reshape(z.size()[0],z.size()[1],-1) # z: (batch_size,seq_len,head*v_size)
 
 if __name__=='__main__':
     # 准备1个batch
