@@ -21,10 +21,13 @@ class EmbeddingWithPosition(nn.Module):
         pos_encoding[:,1::2]=torch.cos(position_emb_fill)
         self.register_buffer('pos_encoding',pos_encoding) # 固定参数,不需要train
 
+        # 防过拟合
+        self.dropout=nn.Dropout(dropout)
+
     def forward(self,x):    # x: (batch_size,seq_len)
         x=self.seq_emb(x)   # x: (batch_size,seq_len,emb_size)
         x=x+self.pos_encoding.unsqueeze(0)[:,:x.size()[1],:] # x: (batch_size,seq_len,emb_size)
-        return x
+        return self.dropout(x)
 
 if __name__=='__main__':
     emb=EmbeddingWithPosition(len(de_vocab),128)
