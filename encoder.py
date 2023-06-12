@@ -1,5 +1,5 @@
 '''
-encoder block支持堆叠, 每个block都输入emb序列并输出emb序列(1:1对应)
+encoder编码器,输入词id序列,输出每个词的编码向量(输入输出1:1)
 '''
 from torch import nn 
 import torch 
