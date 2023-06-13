@@ -16,8 +16,8 @@ class Encoder(nn.Module):
         for _ in range(nblocks):
             self.encoder_blocks.append(EncoderBlock(emb_size,q_k_size,v_size,f_size,head))
 
-    def forward(self,x,pad_id): # x:(batch_size,seq_len)
-        pad_mask=(x==pad_id).unsqueeze(1) # pad_mask:(batch_size,1,seq_len)
+    def forward(self,x): # x:(batch_size,seq_len)
+        pad_mask=(x==PAD_IDX).unsqueeze(1) # pad_mask:(batch_size,1,seq_len)
         pad_mask=pad_mask.expand(x.size()[0],x.size()[1],x.size()[1]) # pad_mask:(batch_size,seq_len,seq_len)
 
         x=self.emb(x)
@@ -41,5 +41,5 @@ if __name__=='__main__':
 
     # Encoder编码
     encoder=Encoder(vocab_size=len(de_vocab),emb_size=128,q_k_size=256,v_size=512,f_size=512,head=8,nblocks=3)
-    z=encoder.forward(batch,PAD_IDX)
+    z=encoder.forward(batch)
     print('encoder outputs:', z.size())

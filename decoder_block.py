@@ -9,7 +9,7 @@ from dataset import de_preprocess,en_preprocess,train_dataset,de_vocab,PAD_IDX,e
 from encoder import Encoder
 
 class DecoderBlock(nn.Module):
-    def __init__(self,emb_size,q_k_size,v_size,head,f_size):
+    def __init__(self,emb_size,q_k_size,v_size,f_size,head):
         super().__init__()
 
         # 第1个多头注意力
@@ -30,14 +30,14 @@ class DecoderBlock(nn.Module):
         )
         self.addnorm3=nn.LayerNorm(emb_size)
 
-    def forward(self,x,encoder_x,first_attn_mask,second_attn_mask): # x: (batch_size,seq_len,emb_size)
+    def forward(self,x,encoder_z,first_attn_mask,second_attn_mask): # x: (batch_size,seq_len,emb_size)
         # 第1个多头
         z=self.first_multihead_attn(x,x,first_attn_mask)  # z: (batch_size,seq_len,head*v_size) , first_attn_mask用于遮盖decoder序列的pad部分,以及避免decoder Q到每个词后面的词
         z=self.z_linear1(z) # z: (batch_size,seq_len,emb_size)
         x=self.addnorm1(z+x) # x: (batch_size,seq_len,emb_size)
         
         # 第2个多头
-        z=self.second_multihead_attn(x,encoder_x,second_attn_mask)  # z: (batch_size,seq_len,head*v_size)   , second_attn_mask用于遮盖encoder序列的pad部分,避免decoder Q到它们
+        z=self.second_multihead_attn(x,encoder_z,second_attn_mask)  # z: (batch_size,seq_len,head*v_size)   , second_attn_mask用于遮盖encoder序列的pad部分,避免decoder Q到它们
         z=self.z_linear2(z) # z: (batch_size,seq_len,emb_size)
         x=self.addnorm2(z+x) # x: (batch_size,seq_len,emb_size)
 
@@ -74,7 +74,7 @@ if __name__=='__main__':
 
     # Encoder编码,输出每个词的编码向量
     enc=Encoder(vocab_size=len(de_vocab),emb_size=128,q_k_size=256,v_size=512,f_size=512,head=8,nblocks=3)
-    enc_outputs=enc.forward(enc_x_batch,PAD_IDX)
+    enc_outputs=enc(enc_x_batch)
     print('encoder outputs:', enc_outputs.size())
 
     # 生成decoder所需的掩码
