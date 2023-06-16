@@ -7,6 +7,7 @@ import torch
 from decoder import Decoder
 from encoder import Encoder
 from dataset import en_preprocess,de_preprocess,train_dataset,en_vocab,de_vocab,PAD_IDX
+from config import DEVICE
 
 class Transformer(nn.Module):
     def __init__(self,enc_vocab_size,dec_vocab_size,emb_size,q_k_size,v_size,f_size,head,nblocks,dropout=0.1,seq_max_len=5000):
@@ -27,7 +28,7 @@ class Transformer(nn.Module):
         return decoder_z
     
 if __name__=='__main__':
-    transformer=Transformer(enc_vocab_size=len(en_vocab),dec_vocab_size=len(de_vocab),emb_size=128,q_k_size=256,v_size=512,f_size=512,head=8,nblocks=3,dropout=0.1,seq_max_len=5000)
+    transformer=Transformer(enc_vocab_size=len(en_vocab),dec_vocab_size=len(de_vocab),emb_size=128,q_k_size=256,v_size=512,f_size=512,head=8,nblocks=3,dropout=0.1,seq_max_len=5000).to(DEVICE)
     
     # 取2个de句子转词ID序列，输入给encoder
     de_tokens1,de_ids1=de_preprocess(train_dataset[0][0]) 
@@ -42,7 +43,7 @@ if __name__=='__main__':
     elif len(de_ids1)>len(de_ids2):
         de_ids2.extend([PAD_IDX]*(len(de_ids1)-len(de_ids2)))
     
-    enc_x_batch=torch.tensor([de_ids1,de_ids2],dtype=torch.long)
+    enc_x_batch=torch.tensor([de_ids1,de_ids2],dtype=torch.long).to(DEVICE)
     print('enc_x_batch batch:', enc_x_batch.size())
 
     # en句子组成batch并padding对齐
@@ -51,7 +52,7 @@ if __name__=='__main__':
     elif len(en_ids1)>len(en_ids2):
         en_ids2.extend([PAD_IDX]*(len(en_ids1)-len(en_ids2)))
 
-    dec_x_batch=torch.tensor([en_ids1,en_ids2],dtype=torch.long)
+    dec_x_batch=torch.tensor([en_ids1,en_ids2],dtype=torch.long).to(DEVICE)
     print('dec_x_batch batch:', dec_x_batch.size())
 
     # 输出每个en词的下一个词概率
