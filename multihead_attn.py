@@ -33,9 +33,9 @@ class MultiHeadAttention(nn.Module):
         
         # 注意力分值处理
         # attn_mask: (batch_size,seq_len,seq_len)
-        attn_mask=attn_mask.unsqueeze(1).expand(-1,self.head,-1,-1) # attn_mask: (batch_size,1,seq_len,seq_len)
-        attn=attn.masked_fill(attn_mask,-torch.inf)
-        attn=torch.softmax(attn,dim=-1) # scores: (batch_size,1,seq_len,seq_len)
+        attn_mask=attn_mask.unsqueeze(1).expand(-1,self.head,-1,-1) # attn_mask: (batch_size,head,seq_len,seq_len)
+        attn=attn.masked_fill(attn_mask,-1e9)
+        attn=torch.softmax(attn,dim=-1) # scores: (batch_size,head,seq_len,seq_len)
 
         # 注意力与V相乘
         v=self.w_v(x_k_v) # v: (batch_size,seq_len,head*v_size)

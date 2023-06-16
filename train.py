@@ -59,11 +59,11 @@ if __name__=='__main__':
 
     # 损失函数和优化器
     loss_fn=nn.CrossEntropyLoss(ignore_index=PAD_IDX) # 样本正确输出序列的pad词不参与损失计算
-    optimizer=torch.optim.Adam(transformer.parameters(), lr=0.0001)
+    optimizer=torch.optim.Adam(transformer.parameters(), lr=0.01)
 
     # TODO：loss基本不收敛，需要找一下bug
     transformer.train()
-    EPOCHS=50
+    EPOCHS=20
     for epoch in range(EPOCHS):
         batch_i=0
         loss_sum=0
