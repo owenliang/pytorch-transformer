@@ -15,7 +15,7 @@ class EmbeddingWithPosition(nn.Module):
 
         # 为序列中每个位置准备一个位置向量，也是emb_size宽
         position_idx=torch.arange(0,seq_max_len,dtype=torch.float).unsqueeze(-1)
-        position_emb_fill=position_idx*torch.exp(torch.arange(0,emb_size,2)*math.log(10000.0)/emb_size)
+        position_emb_fill=position_idx*torch.exp(-torch.arange(0,emb_size,2)*math.log(10000.0)/emb_size)
         pos_encoding=torch.zeros(seq_max_len,emb_size)
         pos_encoding[:,0::2]=torch.sin(position_emb_fill)
         pos_encoding[:,1::2]=torch.cos(position_emb_fill)
