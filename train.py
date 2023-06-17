@@ -61,7 +61,7 @@ if __name__=='__main__':
     loss_fn=nn.CrossEntropyLoss(ignore_index=PAD_IDX) # 样本正确输出序列的pad词不参与损失计算
     optimizer=torch.optim.SGD(transformer.parameters(), lr=1e-3, momentum=0.99)
 
-    # TODO：loss基本不收敛，需要找一下bug
+    # 开始练
     transformer.train()
     EPOCHS=20
     for epoch in range(EPOCHS):
