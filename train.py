@@ -55,11 +55,11 @@ if __name__=='__main__':
     dataloader=DataLoader(dataset,batch_size=250,shuffle=True,num_workers=4,persistent_workers=True,collate_fn=collate_fn)
 
     # 模型
-    transformer=Transformer(enc_vocab_size=len(de_vocab),dec_vocab_size=len(en_vocab),emb_size=512,q_k_size=256,v_size=512,f_size=512,head=8,nblocks=3,dropout=0.1,seq_max_len=SEQ_MAX_LEN).to(DEVICE)
+    transformer=Transformer(enc_vocab_size=len(de_vocab),dec_vocab_size=len(en_vocab),emb_size=512,q_k_size=64,v_size=64,f_size=2048,head=8,nblocks=6,dropout=0.1,seq_max_len=SEQ_MAX_LEN).to(DEVICE)
 
     # 损失函数和优化器
     loss_fn=nn.CrossEntropyLoss(ignore_index=PAD_IDX) # 样本正确输出序列的pad词不参与损失计算
-    optimizer=torch.optim.Adam(transformer.parameters(), lr=0.01)
+    optimizer=torch.optim.SGD(transformer.parameters(), lr=1e-3, momentum=0.99)
 
     # TODO：loss基本不收敛，需要找一下bug
     transformer.train()
@@ -72,14 +72,13 @@ if __name__=='__main__':
             pad_enc_x=pad_enc_x.to(DEVICE) 
             pad_dec_x=pad_dec_x[:,:-1].to(DEVICE) # decoder实际输入 
             dec_z=transformer(pad_enc_x,pad_dec_x) # decoder实际输出
-            #print('epoch:{} batch:{} dec_z:{}'.format(epoch,batch_i,dec_z.size()))
+
             batch_i+=1
             loss=loss_fn(dec_z.view(-1,dec_z.size()[-1]),real_dec_z.view(-1)) # 把整个batch中的所有词拉平
             loss_sum+=loss.item()
+            print('epoch:{} batch:{} loss:{}'.format(epoch,batch_i,loss.item()))
             
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-
-        print('epoch:{} loss:{}'.format(epoch,loss_sum/batch_i))
-        torch.save(transformer,'checkpoints/model.{}.pth'.format(epoch))
+        torch.save(transformer,'checkpoints/model.pth'.format(epoch))

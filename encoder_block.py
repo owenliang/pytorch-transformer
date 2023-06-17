@@ -26,11 +26,10 @@ class EncoderBlock(nn.Module):
     def forward(self,x,attn_mask): # x: (batch_size,seq_len,emb_size)
         z=self.multihead_attn(x,x,attn_mask)  # z: (batch_size,seq_len,head*v_size)
         z=self.z_linear(z) # z: (batch_size,seq_len,emb_size)
-        z=self.addnorm1(z+x) # z: (batch_size,seq_len,emb_size)
+        output1=self.addnorm1(z+x) # z: (batch_size,seq_len,emb_size)
         
-        z=self.feedforward(z) # z: (batch_size,seq_len,emb_size)
-        z=self.addnorm2(z+x)
-        return z # z: (batch_size,seq_len,emb_size)
+        z=self.feedforward(output1) # z: (batch_size,seq_len,emb_size)
+        return self.addnorm2(z+output1) # (batch_size,seq_len,emb_size)
 
 if __name__=='__main__':
     # 准备1个batch

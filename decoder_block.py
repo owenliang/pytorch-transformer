@@ -35,17 +35,16 @@ class DecoderBlock(nn.Module):
         # 第1个多头
         z=self.first_multihead_attn(x,x,first_attn_mask)  # z: (batch_size,seq_len,head*v_size) , first_attn_mask用于遮盖decoder序列的pad部分,以及避免decoder Q到每个词后面的词
         z=self.z_linear1(z) # z: (batch_size,seq_len,emb_size)
-        x=self.addnorm1(z+x) # x: (batch_size,seq_len,emb_size)
+        output1=self.addnorm1(z+x) # x: (batch_size,seq_len,emb_size)
         
         # 第2个多头
-        z=self.second_multihead_attn(x,encoder_z,second_attn_mask)  # z: (batch_size,seq_len,head*v_size)   , second_attn_mask用于遮盖encoder序列的pad部分,避免decoder Q到它们
+        z=self.second_multihead_attn(output1,encoder_z,second_attn_mask)  # z: (batch_size,seq_len,head*v_size)   , second_attn_mask用于遮盖encoder序列的pad部分,避免decoder Q到它们
         z=self.z_linear2(z) # z: (batch_size,seq_len,emb_size)
-        x=self.addnorm2(z+x) # x: (batch_size,seq_len,emb_size)
+        output2=self.addnorm2(z+output1) # x: (batch_size,seq_len,emb_size)
 
         # 最后feedforward
-        z=self.feedforward(x) # z: (batch_size,seq_len,emb_size)
-        z=self.addnorm3(z+x)
-        return z # z: (batch_size,seq_len,emb_size)
+        z=self.feedforward(output2) # z: (batch_size,seq_len,emb_size)
+        return self.addnorm3(z+output2) # (batch_size,seq_len,emb_size)
 
 if __name__=='__main__':
     # 取2个de句子转词ID序列，输入给encoder

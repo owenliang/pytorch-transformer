@@ -19,25 +19,20 @@ class Decoder(nn.Module):
         for _ in range(nblocks):
             self.decoder_blocks.append(DecoderBlock(emb_size,q_k_size,v_size,f_size,head))
         
-        # 输出向量转词概率
+        # 输出向量词概率Logits
         self.linear=nn.Linear(emb_size,vocab_size)  
-        self.softmax=nn.Softmax(dim=-1) 
 
     def forward(self,x,encoder_z,encoder_x): # x: (batch_size,seq_len)
-        first_attn_mask=(x==PAD_IDX).unsqueeze(1).expand(x.size()[0],x.size()[1],x.size()[1]) # 目标序列的pad掩码
+        first_attn_mask=(x==PAD_IDX).unsqueeze(1).expand(x.size()[0],x.size()[1],x.size()[1]).to(DEVICE) # 目标序列的pad掩码
         first_attn_mask=first_attn_mask|torch.triu(torch.ones(x.size()[1],x.size()[1]),diagonal=1).bool().unsqueeze(0).expand(x.size()[0],-1,-1).to(DEVICE) # &目标序列的向后看掩码
         # 根据来源序列的pad掩码，遮盖decoder对其pad部分的注意力
-        second_attn_mask=(encoder_x==PAD_IDX).unsqueeze(1).expand(encoder_x.size()[0],x.size()[1],encoder_x.size()[1]) # (batch_size,target_len,src_len)
-
-        first_attn_mask=first_attn_mask.to(DEVICE)
-        second_attn_mask=second_attn_mask.to(DEVICE)
+        second_attn_mask=(encoder_x==PAD_IDX).unsqueeze(1).expand(encoder_x.size()[0],x.size()[1],encoder_x.size()[1]).to(DEVICE) # (batch_size,target_len,src_len)
 
         x=self.emb(x)
         for block in self.decoder_blocks:
             x=block(x,encoder_z,first_attn_mask,second_attn_mask)
         
-        x=self.linear(x)
-        return self.softmax(x)
+        return self.linear(x)
     
 if __name__=='__main__':
     # 取2个de句子转词ID序列，输入给encoder
