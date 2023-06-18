@@ -3,8 +3,6 @@
 '''
 from torch import nn 
 import torch
-from decoder import Decoder
-from encoder import Encoder
 from dataset import en_preprocess,de_preprocess,train_dataset,en_vocab,de_vocab,PAD_IDX
 from transformer import Transformer
 from torch.utils.data import DataLoader,Dataset

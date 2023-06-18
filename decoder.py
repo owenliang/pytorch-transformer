@@ -3,7 +3,6 @@ decoder解码器, 输出当前词序列的下一个词概率
 '''
 from torch import nn 
 import torch 
-from multihead_attn import MultiHeadAttention
 from emb import EmbeddingWithPosition
 from dataset import de_preprocess,en_preprocess,train_dataset,de_vocab,PAD_IDX,en_vocab
 from decoder_block import DecoderBlock
