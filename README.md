@@ -15,7 +15,7 @@ evaluation.py：预测
 
 代码和资源均免费公开，但如果你觉得很难看懂的话，那你大概率应该加入我的私教小课堂：
 
-[ai小鱼塘](ref/aixiaoyutang.jpg)
+![ai小鱼塘](ref/aixiaoyutang.jpg)
 
 我会在鱼塘里做2件事情：
 1，回答大家关于本项目的问题
