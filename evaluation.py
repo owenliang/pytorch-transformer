@@ -34,6 +34,7 @@ def translate(transformer,de_sentence):
 if __name__=='__main__':
     # 加载模型
     transformer=torch.load('checkpoints/model.pth')
+    transformer.eval()
     
     # 测试数据
     for i in range(100):
