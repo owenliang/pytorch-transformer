@@ -27,7 +27,9 @@ for de,en in train_dataset:
     en_tokens.append(en_tokenizer(en))
 
 de_vocab=build_vocab_from_iterator(de_tokens,specials=[UNK_SYM, PAD_SYM, BOS_SYM, EOS_SYM],special_first=True) # 德语token词表
+de_vocab.set_default_index(UNK_IDX)
 en_vocab=build_vocab_from_iterator(en_tokens,specials=[UNK_SYM, PAD_SYM, BOS_SYM, EOS_SYM],special_first=True) # 英语token词表
+en_vocab.set_default_index(UNK_IDX)
 
 # 句子特征预处理
 def de_preprocess(de_sentence):
