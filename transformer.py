@@ -23,8 +23,8 @@ class Transformer(nn.Module):
         encoder_z=self.encoder(encoder_x)
         return encoder_z
 
-    def decode(self,encoder_x,encoder_z,decoder_x):
-        decoder_z=self.decoder(encoder_x,encoder_z,decoder_x)
+    def decode(self,decoder_x,encoder_z,encoder_x):
+        decoder_z=self.decoder(decoder_x,encoder_z,encoder_x)
         return decoder_z
     
 if __name__=='__main__':

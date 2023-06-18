@@ -8,11 +8,8 @@ from encoder import Encoder
 from dataset import en_preprocess,de_preprocess,train_dataset,en_vocab,de_vocab,PAD_IDX
 from transformer import Transformer
 from torch.utils.data import DataLoader,Dataset
-from config import DEVICE
+from config import DEVICE,SEQ_MAX_LEN
 from torch.nn.utils.rnn import pad_sequence
-
-# 最长序列（受限于postition emb）
-SEQ_MAX_LEN=5000
 
 # 数据集
 class De2EnDataset(Dataset):
