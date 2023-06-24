@@ -36,8 +36,13 @@ if __name__=='__main__':
     transformer=torch.load('checkpoints/model.pth')
     transformer.eval()
     
+    en=translate(transformer,'Zwei Männer unterhalten sich mit zwei Frauen')
+    print(en)
+
+    '''
     # 测试数据
     for i in range(100):
         de,en=train_dataset[i]
-        en=translate(transformer,de)
-        print('{} -> {}'.format(de,en))
+        en1=translate(transformer,de)
+        print('{} -> {} -> {}'.format(de,en,en1))
+    '''
