@@ -17,7 +17,7 @@ class Transformer(nn.Module):
 
     def forward(self,encoder_x,decoder_x):
         encoder_z=self.encode(encoder_x)
-        return self.decoder(decoder_x,encoder_z,encoder_x)
+        return self.decode(decoder_x,encoder_z,encoder_x)
 
     def encode(self,encoder_x):
         encoder_z=self.encoder(encoder_x)

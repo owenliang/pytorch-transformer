@@ -31,7 +31,7 @@ class Decoder(nn.Module):
         for block in self.decoder_blocks:
             x=block(x,encoder_z,first_attn_mask,second_attn_mask)
         
-        return self.linear(x)
+        return self.linear(x) # (batch_size,target_len,vocab_size)
     
 if __name__=='__main__':
     # 取2个de句子转词ID序列，输入给encoder

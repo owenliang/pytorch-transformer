@@ -55,5 +55,5 @@ if __name__=='__main__':
     # 多头注意力
     multihead=MultiHeadAttention(emb_size=128,q_k_size=256,v_size=512,head=8)
     attn_mask=torch.zeros((1,de_ids_tensor.size()[0],de_ids_tensor.size()[0])) # batch中每个样本对应1个注意力矩阵
-    multihead_result=multihead.forward(x_q=emb_result,x_k_v=emb_result,attn_mask=attn_mask)
+    multihead_result=multihead(x_q=emb_result,x_k_v=emb_result,attn_mask=attn_mask)
     print('multihead_result:', multihead_result.size())
