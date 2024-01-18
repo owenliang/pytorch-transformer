@@ -51,18 +51,19 @@ if __name__=='__main__':
     dataloader=DataLoader(dataset,batch_size=250,shuffle=True,num_workers=4,persistent_workers=True,collate_fn=collate_fn)
 
     # 模型
+    transformer=Transformer(enc_vocab_size=len(de_vocab),dec_vocab_size=len(en_vocab),emb_size=512,q_k_size=64,v_size=64,f_size=2048,head=8,nblocks=6,dropout=0.1,seq_max_len=SEQ_MAX_LEN).to(DEVICE)
     try:
-        transformer=torch.load('checkpoints/model.pth')
+        transformer.load_state_dict(torch.load('checkpoints/model.pth'))
     except:
-        transformer=Transformer(enc_vocab_size=len(de_vocab),dec_vocab_size=len(en_vocab),emb_size=512,q_k_size=64,v_size=64,f_size=2048,head=8,nblocks=6,dropout=0.1,seq_max_len=SEQ_MAX_LEN).to(DEVICE)
-
+        pass 
+    
     # 损失函数和优化器
     loss_fn=nn.CrossEntropyLoss(ignore_index=PAD_IDX) # 样本正确输出序列的pad词不参与损失计算
     optimizer=torch.optim.SGD(transformer.parameters(), lr=1e-3, momentum=0.99)
 
     # 开始练
     transformer.train()
-    EPOCHS=5
+    EPOCHS=20
     for epoch in range(EPOCHS):
         batch_i=0
         loss_sum=0

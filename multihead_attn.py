@@ -33,9 +33,9 @@ class MultiHeadAttention(nn.Module):
             x_q=x_q[:,-1:,:] # (batch_size,seq_len=1,emb_size)
             x_k_v=x_k_v[:,-1:,:] # (batch_size,seq_len'=1,emb_size)
             
-            q=self.w_q(x_q) # q: (batch_size,seq_len,head*q_k_size)
-            k=self.w_k(x_k_v) # k: (batch_size,seq_len,head*q_k_size)
-            v=self.w_v(x_k_v) # v: (batch_size,seq_len,head*v_size)
+            q=self.w_q(x_q) # q: (batch_size,seq_len=1,head*q_k_size)
+            k=self.w_k(x_k_v) # k: (batch_size,seq_len=1,head*q_k_size)
+            v=self.w_v(x_k_v) # v: (batch_size,seq_len=1,head*v_size)
             if 'Q' in self.kv_cache:
                 q=torch.concat((self.kv_cache['Q'],q),dim=1) # 追加到前一次推理的Q末尾
             if 'K' in self.kv_cache:
