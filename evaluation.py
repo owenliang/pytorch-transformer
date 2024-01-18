@@ -1,6 +1,7 @@
 import torch
-from dataset import de_preprocess,train_dataset,BOS_IDX,EOS_IDX,UNK_IDX,PAD_IDX,en_vocab
+from dataset import de_preprocess,train_dataset,BOS_IDX,EOS_IDX,UNK_IDX,PAD_IDX,en_vocab,de_vocab
 from config import DEVICE,SEQ_MAX_LEN
+from transformer import Transformer
 
 # de翻译到en
 def translate(transformer,de_sentence):
@@ -14,6 +15,7 @@ def translate(transformer,de_sentence):
     encoder_z=transformer.encode(enc_x_batch)    # encoder编码
 
     # Decoder阶段
+    transformer.decoder.open_kvcache() # 开启KV Cache
     en_token_ids=[BOS_IDX] # 翻译结果
     while len(en_token_ids)<SEQ_MAX_LEN:
         dec_x_batch=torch.tensor([en_token_ids],dtype=torch.long).to(DEVICE)  # 准备decoder输入
@@ -24,16 +26,17 @@ def translate(transformer,de_sentence):
 
         if next_token_id==EOS_IDX:  # 结束符
             break
-
+    transformer.decoder.close_kvcache() # 清理KV Cache
+    
     # 生成翻译结果
     en_token_ids=[id for id in en_token_ids if id not in [BOS_IDX,EOS_IDX,UNK_IDX,PAD_IDX]] # 忽略特殊字符
     en_tokens=en_vocab.lookup_tokens(en_token_ids)    # 词id序列转token序列
     return ' '.join(en_tokens)
 
-
 if __name__=='__main__':
     # 加载模型
-    transformer=torch.load('checkpoints/model.pth')
+    transformer=Transformer(enc_vocab_size=len(de_vocab),dec_vocab_size=len(en_vocab),emb_size=512,q_k_size=64,v_size=64,f_size=2048,head=8,nblocks=6,dropout=0.1,seq_max_len=SEQ_MAX_LEN).to(DEVICE)
+    transformer.load_state_dict(torch.load('checkpoints/model.pth'))
     transformer.eval()
     
     en=translate(transformer,'Zwei Männer unterhalten sich mit zwei Frauen')

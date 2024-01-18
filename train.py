@@ -8,6 +8,7 @@ from transformer import Transformer
 from torch.utils.data import DataLoader,Dataset
 from config import DEVICE,SEQ_MAX_LEN
 from torch.nn.utils.rnn import pad_sequence
+import os
 
 # 数据集
 class De2EnDataset(Dataset):
@@ -61,7 +62,7 @@ if __name__=='__main__':
 
     # 开始练
     transformer.train()
-    EPOCHS=300
+    EPOCHS=5
     for epoch in range(EPOCHS):
         batch_i=0
         loss_sum=0
@@ -79,4 +80,5 @@ if __name__=='__main__':
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        torch.save(transformer,'checkpoints/model.pth'.format(epoch))
+        torch.save(transformer.state_dict(),'checkpoints/model.pth.tmp'.format(epoch))
+        os.replace('checkpoints/model.pth.tmp','checkpoints/model.pth')

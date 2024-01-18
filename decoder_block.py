@@ -13,12 +13,12 @@ class DecoderBlock(nn.Module):
     def __init__(self,emb_size,q_k_size,v_size,f_size,head):
         super().__init__()
 
-        # 第1个多头注意力
+        # 第1个多头注意力 --> 自注意力
         self.first_multihead_attn=MultiHeadAttention(emb_size,q_k_size,v_size,head) 
         self.z_linear1=nn.Linear(head*v_size,emb_size) 
         self.addnorm1=nn.LayerNorm(emb_size)
 
-        # 第2个多头注意力
+        # 第2个多头注意力 --> 交叉注意力
         self.second_multihead_attn=MultiHeadAttention(emb_size,q_k_size,v_size,head) 
         self.z_linear2=nn.Linear(head*v_size,emb_size) 
         self.addnorm2=nn.LayerNorm(emb_size)
@@ -30,7 +30,17 @@ class DecoderBlock(nn.Module):
             nn.Linear(f_size,emb_size)
         )
         self.addnorm3=nn.LayerNorm(emb_size)
-
+        
+    # 打开kvcache推理优化
+    def open_kvcache(self):
+        self.first_multihead_attn.set_kvcache(kv_cache_type='selfattn')
+        self.second_multihead_attn.set_kvcache(kv_cache_type='crossattn')
+        
+    # 关闭kvcache推理优化
+    def close_kvcache(self):
+        self.first_multihead_attn.set_kvcache(kv_cache_type='')
+        self.second_multihead_attn.set_kvcache(kv_cache_type='')
+        
     def forward(self,x,encoder_z,first_attn_mask,second_attn_mask): # x: (batch_size,seq_len,emb_size)
         # 第1个多头
         z=self.first_multihead_attn(x,x,first_attn_mask)  # z: (batch_size,seq_len,head*v_size) , first_attn_mask用于遮盖decoder序列的pad部分,以及避免decoder Q到每个词后面的词

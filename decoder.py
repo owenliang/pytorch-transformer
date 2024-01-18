@@ -21,6 +21,16 @@ class Decoder(nn.Module):
         # 输出向量词概率Logits
         self.linear=nn.Linear(emb_size,vocab_size)  
 
+    # 打开kvcache推理优化
+    def open_kvcache(self):
+        for block in self.decoder_blocks:
+            block.open_kvcache()
+        
+    # 关闭kvcache推理优化
+    def close_kvcache(self):
+        for block in self.decoder_blocks:
+            block.close_kvcache()
+    
     def forward(self,x,encoder_z,encoder_x): # x: (batch_size,seq_len)
         first_attn_mask=(x==PAD_IDX).unsqueeze(1).expand(x.size()[0],x.size()[1],x.size()[1]).to(DEVICE) # 目标序列的pad掩码
         first_attn_mask=first_attn_mask|torch.triu(torch.ones(x.size()[1],x.size()[1]),diagonal=1).bool().unsqueeze(0).expand(x.size()[0],-1,-1).to(DEVICE) # &目标序列的向后看掩码
